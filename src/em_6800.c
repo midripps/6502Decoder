@@ -125,7 +125,7 @@ static int jsr_idx_pch = 4;
 // Forward declarations
 // ====================================================================
 
-static InstrType instr_table_6800[];
+static InstrType instr_table_6800[INSTR_SET_SIZE];
 
 // ====================================================================
 // Helper Methods
@@ -297,7 +297,7 @@ static void em_6800_init(arguments_t *args) {
    }
 
    InstrType *instr = instr_table;
-   for (int i = 0; i < 256; i++) {
+   for (int i = 0; i < INSTR_SET_SIZE; i++) {
       // Remove the undocumented instructions, if not supported
       if (instr->undocumented && !args->undocumented) {
          instr->mnemonic = ILLEGAL;

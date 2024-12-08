@@ -202,7 +202,7 @@ static char *m2_ops[] = {
 // Forward declarations
 // ====================================================================
 
-static InstrType instr_table_65c816[];
+static InstrType instr_table_65c816[INSTR_SET_SIZE];
 
 static void emulation_mode_on();
 static void emulation_mode_off();
@@ -934,7 +934,7 @@ static void em_65816_init(arguments_t *args) {
       XS = args->xs_flag & 1;
    }
    InstrType *instr = instr_table;
-   for (int i = 0; i < 256; i++) {
+   for (int i = 0; i < INSTR_SET_SIZE; i++) {
       // Compute the extra cycles for the 816 when M=0 and/or X=0
       instr->m_extra = 0;
       instr->x_extra = 0;

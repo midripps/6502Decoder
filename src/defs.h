@@ -26,6 +26,9 @@ typedef enum {
    CPU_6800,
 } cpu_t;
 
+// Instruction set table size.
+#define INSTR_SET_SIZE 256
+
 // Sample Queue Depth - needs to fit the longest instruction
 #define DEPTH 13
 

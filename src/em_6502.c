@@ -134,8 +134,8 @@ static int jsr_pcl = 4;
 // Forward declarations
 // ====================================================================
 
-static InstrType instr_table_6502[];
-static InstrType instr_table_65c02[];
+static InstrType instr_table_6502[INSTR_SET_SIZE];
+static InstrType instr_table_65c02[INSTR_SET_SIZE];
 
 static int op_STA(operand_t operand, ea_t ea);
 static int op_STX(operand_t operand, ea_t ea);
@@ -590,7 +590,7 @@ static void em_6502_init(arguments_t *args) {
    }
 
    InstrType *instr = instr_table;
-   for (int i = 0; i < 256; i++) {
+   for (int i = 0; i < INSTR_SET_SIZE; i++) {
       // Remove the undocumented instructions, if not supported
       if (instr->undocumented && !args->undocumented) {
          instr->mnemonic = ILLEGAL;
