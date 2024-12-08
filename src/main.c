@@ -1678,7 +1678,7 @@ int main(int argc, char *argv[]) {
    if (!arguments.filename || !strcmp(arguments.filename, "-")) {
       stream = stdin;
    } else {
-      stream = fopen(arguments.filename, "r");
+      stream = fopen(arguments.filename, "rb");
       if (stream == NULL) {
          perror("failed to open capture file");
          return 2;
