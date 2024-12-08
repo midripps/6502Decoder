@@ -87,22 +87,22 @@ static int master_nordy = 0;
 static InstrType *instr_table;
 
 static AddrModeType addr_mode_table[] = {
-   {1,    "%1$s"},                  // IMP
-   {1,    "%1$s A"},                // IMPA
-   {2,    "%1$s %2$s"},             // BRA
-   {2,    "%1$s #%2$02X"},          // IMM
-   {2,    "%1$s %2$02X"},           // ZP
-   {2,    "%1$s %2$02X,X"},         // ZPX
-   {2,    "%1$s %2$02X,Y"},         // ZPY
-   {2,    "%1$s (%2$02X,X)"},       // INDX
-   {2,    "%1$s (%2$02X),Y"},       // INDY
-   {2,    "%1$s (%2$02X)"},         // IND
-   {3,    "%1$s %3$02X%2$02X"},     // ABS
-   {3,    "%1$s %3$02X%2$02X,X"},   // ABSX
-   {3,    "%1$s %3$02X%2$02X,Y"},   // ABSY
-   {3,    "%1$s (%3$02X%2$02X)"},   // IND1
-   {3,    "%1$s (%3$02X%2$02X,X)"}, // IND1X
-   {3,    "%1$s %2$02X,%3$s"}       // ZPR
+   {1,    "%s"},                    // IMP
+   {1,    "%s A"},                  // IMPA
+   {2,    "%s %s"},                 // BRA
+   {2,    "%s #%02X"},              // IMM
+   {2,    "%s %02X"},               // ZP
+   {2,    "%s %02X,X"},             // ZPX
+   {2,    "%s %02X,Y"},             // ZPY
+   {2,    "%s (%02X,X)"},           // INDX
+   {2,    "%s (%02X),Y"},           // INDY
+   {2,    "%s (%02X)"},             // IND
+   {3,    "%s lh%02X%02X"},         // ABS
+   {3,    "%s lh%02X%02X,X"},       // ABSX
+   {3,    "%s lh%02X%02X,Y"},       // ABSY
+   {3,    "%s (lh%02X%02X)"},       // IND1
+   {3,    "%s (lh%02X%02X,X)"},     // IND1X
+   {3,    "%s %02X,%s"}             // ZPR
 };
 
 // 6502 registers: -1 means unknown
