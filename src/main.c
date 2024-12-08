@@ -1140,11 +1140,11 @@ void queue_sample(sample_t *sample) {
 // Input file processing and bus cycle extraction
 // ====================================================================
 
-static int min(int a, int b) {
+static int imin(int a, int b) {
    return (a < b) ? a : b;
 }
 
-static int max(int a, int b) {
+static int imax(int a, int b) {
    return (a > b) ? a : b;
 }
 
@@ -1302,10 +1302,10 @@ void decode(FILE *stream) {
       uint16_t skew_buffer  [SKEW_BUFFER_SIZE];
 
       // Minimize the amount of buffering to avoid unnecessary garbage
-      int min_skew = min(arguments.skew_rd, arguments.skew_wr);
-      int max_skew = max(arguments.skew_rd, arguments.skew_wr);
+      int min_skew = imin(arguments.skew_rd, arguments.skew_wr);
+      int max_skew = imax(arguments.skew_rd, arguments.skew_wr);
 
-      int tail        = max(0, max_skew);
+      int tail        = imax(0, max_skew);
       int head        = 0;
       int rddata_head = arguments.skew_rd;
       int wrdata_head = arguments.skew_wr;
