@@ -499,7 +499,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
       if (arg && strlen(arg) > 0) {
          i = 0;
          while (cpu_names[i].cpu_name) {
-            if (strcasecmp(arg, cpu_names[i].cpu_name) == 0) {
+            if (stricmp(arg, cpu_names[i].cpu_name) == 0) {
                arguments->cpu_type = cpu_names[i].cpu_type;
                return 0;
             }
@@ -511,7 +511,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
    case KEY_MACHINE:
       i = 0;
       while (machine_names[i]) {
-         if (strcasecmp(arg, machine_names[i]) == 0) {
+         if (stricmp(arg, machine_names[i]) == 0) {
             arguments->machine = i;
             return 0;
          }

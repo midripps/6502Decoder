@@ -21,11 +21,11 @@ static int active_count = 0;
          char *rest   = strtok(NULL, "");
          // Act as a factory method for profilers
          profiler_t *instance = NULL;
-         if (strcasecmp(type, "instr") == 0) {
+         if (stricmp(type, "instr") == 0) {
             instance = profiler_instr_create(rest);
-         } else if (strcasecmp(type, "block") == 0) {
+         } else if (stricmp(type, "block") == 0) {
             instance = profiler_block_create(rest);
-         } else if (strcasecmp(type, "call") == 0) {
+         } else if (stricmp(type, "call") == 0) {
             instance = profiler_call_create(rest);
          }
          if (instance) {
