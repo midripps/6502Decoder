@@ -1333,7 +1333,6 @@ void decode(FILE *stream) {
             // Only act on edges of phi
             int pin_phi2 = clk_pol ^ ((sample >> idx_phi) & 1);
             if (pin_phi2 != last_phi2) {
-               last_phi2 = pin_phi2;
                if (pin_phi2) {
                   // Sample control signals after rising edge of PHI2
                   // Note: this is a change for the 65816, but should be fine timing wise
@@ -1351,13 +1350,14 @@ void decode(FILE *stream) {
                      s.user = (sample >> idx_user) & 1;
                   }
                } else {
-                  if (idx_rdy < 0 || ((sample >> idx_rdy) & 1)) {
+                  if (last_phi2 != -1 && (idx_rdy < 0 || ((sample >> idx_rdy) & 1)) ) {
                      // Sample the data skewed (--skew=) relative to the falling edge of PHI2
                      s.data = (skew_buffer[s.rnw == 0 ? wrdata_head : rddata_head] >> idx_data) & 255;
                      queue_sample(&s);
                   }
                   s.cycle_count++;
                }
+               last_phi2 = pin_phi2;
             }
             s.sample_count++;
             // Increment the circular buffer pointers in lock-step to keey the skew constant
