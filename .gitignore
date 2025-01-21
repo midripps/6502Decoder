@@ -2,6 +2,7 @@
 #*
 decode6502
 matcher
+traces/*.txt
 not_in_git/
 *.log
 *.bin
