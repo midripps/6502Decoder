@@ -35,6 +35,9 @@ static int tube_high      = -1;
 
 static char buffer[256];
 
+static void memory_read_default(int data, int ea);
+static int memory_write_default(int data, int ea);
+
 // Machine specific memory rd/wr handlers
 static void (*memory_read_fn)(int data, int ea);
 static int (*memory_write_fn)(int data, int ea);
@@ -419,6 +422,30 @@ static void init_blitter(int logtube) {
    }
 }
 
+
+// ==================================================
+// Commodore PET 
+// ==================================================
+
+
+static void memory_read_pet(int data, int ea) {
+    if (ea >= 0xe810 && ea <= 0xe82f ||
+        ea >= 0xe840 && ea <= 0xe84f ||
+        ea >= 0xe880 && ea <= 0xe88f)
+            return;
+
+    if (memory[ea] >= 0 && memory[ea] != data) {
+        log_memory_fail(ea, memory[ea], data);
+        failflag |= 1;
+    }
+    memory[ea] = data;
+}
+
+static void init_pet(int logtube) {
+    memory_read_fn = memory_read_pet;
+    memory_write_fn = memory_write_default;
+}
+
 // ==================================================
 // Default Memory Handlers
 // ==================================================
@@ -467,6 +494,9 @@ void memory_init(int size, machine_t machine, int logtube) {
    case MACHINE_BLITTER:
       init_blitter(logtube);
       break;
+   case MACHINE_PET:
+       init_pet(logtube);
+       break;
    default:
       init_default(logtube);
       break;

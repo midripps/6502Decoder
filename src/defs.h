@@ -11,6 +11,7 @@ typedef enum {
    MACHINE_ATOM,
    MACHINE_MEK6800D2,
    MACHINE_BLITTER,
+   MACHINE_PET,
 } machine_t;
 
 typedef enum {
