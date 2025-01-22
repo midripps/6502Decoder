@@ -429,6 +429,9 @@ static void init_blitter(int logtube) {
 
 
 static void memory_read_pet(int data, int ea) {
+    // if (ea == 0x01fb)
+    //   puts("Read from 01FB");
+
     if (ea >= 0xe810 && ea <= 0xe82f ||
         ea >= 0xe840 && ea <= 0xe84f ||
         ea >= 0xe880 && ea <= 0xe88f)
@@ -459,6 +462,9 @@ static void memory_read_default(int data, int ea) {
 }
 
 static int memory_write_default(int data, int ea) {
+   // if (ea == 0x01fb)
+   //   puts("Write to 01FB");
+
    memory[ea] = data;
    return 0;
 }
