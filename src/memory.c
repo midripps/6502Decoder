@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "defs.h"
 #include "tube_decode.h"
 #include "memory.h"
@@ -23,11 +24,13 @@ static int vdu_op;           // the last instruction fetch was by the VDU driver
 
 // Main Memory
 
-static int *memory        = NULL;
+static int8_t *memory        = NULL;
 static int mem_model      = 0;
 static int mem_rd_logging = 0;
 static int mem_wr_logging = 0;
 static int addr_digits    = 0;
+
+static char* mem_roms_dir = 0;
 
 // IO
 static int tube_low       = -1;
@@ -107,7 +110,7 @@ static void set_tube_window(int low, int high) {
 }
 
 static int *init_ram(int size) {
-   int *ram =  malloc(size * sizeof(int));
+   int8_t *ram =  malloc(size);
    for (int i = 0; i < size; i++) {
       ram[i] = -1;
    }
@@ -429,9 +432,6 @@ static void init_blitter(int logtube) {
 
 
 static void memory_read_pet(int data, int ea) {
-    // if (ea == 0x01fb)
-    //   puts("Read from 01FB");
-
     if (ea >= 0xe810 && ea <= 0xe82f ||
         ea >= 0xe840 && ea <= 0xe84f ||
         ea >= 0xe880 && ea <= 0xe88f)
@@ -444,7 +444,26 @@ static void memory_read_pet(int data, int ea) {
     memory[ea] = data;
 }
 
+static void load_rom_images() {
+    if (!mem_roms_dir) return;
+    
+    char romFilePathName[255];
+    strcpy(romFilePathName, mem_roms_dir);
+    if (romFilePathName[strlen(romFilePathName) - 1] != '\\')
+        strcat(romFilePathName, "\\");
+    strcat(romFilePathName, "b000.bin");
+
+    FILE* romsFile = fopen(romFilePathName, "rb");
+
+    int romSize = 4096;
+    if (fread(&memory[0xb000], sizeof(uint8_t), romSize, romsFile) != romSize)
+        puts("Error, failed to read all ROM bytes.");
+
+    fclose(romsFile);
+}
+
 static void init_pet(int logtube) {
+    load_rom_images();
     memory_read_fn = memory_read_pet;
     memory_write_fn = memory_write_default;
 }
@@ -462,9 +481,6 @@ static void memory_read_default(int data, int ea) {
 }
 
 static int memory_write_default(int data, int ea) {
-   // if (ea == 0x01fb)
-   //   puts("Write to 01FB");
-
    memory[ea] = data;
    return 0;
 }
@@ -541,6 +557,10 @@ void memory_set_rd_logging(int bitmask) {
 
 void memory_set_wr_logging(int bitmask) {
    mem_wr_logging = bitmask;
+}
+
+void memory_set_roms_dir(char* roms_dir) {
+    mem_roms_dir = roms_dir;
 }
 
 void memory_read(int data, int ea, mem_access_t type) {

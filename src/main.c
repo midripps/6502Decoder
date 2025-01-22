@@ -1538,6 +1538,7 @@ int main(int argc, char *argv[]) {
       memory_size = 0x10000;
    }
 
+   memory_set_roms_dir(arguments.roms_dir);
    memory_init(memory_size, arguments.machine, arguments.bbctube);
 
    // Turn on memory write logging if show rom bank option (-r) is selected

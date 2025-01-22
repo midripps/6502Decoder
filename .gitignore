@@ -6,6 +6,7 @@ traces/*.txt
 not_in_git/
 *.log
 *.bin
+*.err
 *.tmp
 clark_bcd_full.bin.gz
 dormann_d6502.bin.gz
