@@ -146,7 +146,8 @@ enum {
    GROUP_OUTPUT  = 2,
    GROUP_SIGDEFS = 3,
    GROUP_6502    = 4,
-   GROUP_65816   = 5
+   GROUP_65816   = 5,
+   GROUP_CBM     = 6,
 };
 
 
@@ -166,6 +167,7 @@ enum {
    KEY_UNDOC = 'u',
    KEY_CYCLES = 'y',
    KEY_SAMPLES = 'Y',
+   KEY_SHOWROM = 'r',
    KEY_VECRST = 1,
    KEY_BBCTUBE,
    KEY_MEM,
@@ -192,7 +194,7 @@ enum {
    KEY_EMUL,
    KEY_MS,
    KEY_XS,
-   KEY_SHOWROM = 'r'
+   KEY_ROMSDIR,
 };
 
 
@@ -315,6 +317,9 @@ static struct argp_option options[] = {
    { "ms",              KEY_MS,    "HEX", OPTION_ARG_OPTIONAL, "Initial value of the M flag",                        GROUP_65816},
    { "xs",              KEY_XS,    "HEX", OPTION_ARG_OPTIONAL, "Initial value of the X flag",                        GROUP_65816},
    { "sp",              KEY_SP,    "HEX", OPTION_ARG_OPTIONAL, "Initial value of the Stack Pointer register",       GROUP_65816},
+
+   { 0, 0, 0, 0, "Additional Commodore options:", GROUP_CBM},
+   { "roms",        KEY_ROMSDIR,   "FILE",                    0, "Folder contain CBM rom images", GROUP_CBM},
    { 0 }
 };
 
@@ -581,6 +586,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
    case KEY_UNDOC:
       arguments->undocumented = 1;
       break;
+   case KEY_ROMSDIR:
+       arguments->roms_dir = arg;
+       printf("Roms dir: %s\n", arguments->roms_dir);
+       break;
    case ARGP_KEY_ARG:
       arguments->filename = arg;
       break;

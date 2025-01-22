@@ -117,6 +117,7 @@ typedef struct {
    int trigger_skipint;
    char *filename;
    int show_romno;
+   char* roms_dir;
 } arguments_t;
 
 typedef struct {

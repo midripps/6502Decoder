@@ -479,7 +479,8 @@ static void init_default(int logtube) {
 // ==================================================
 
 void memory_init(int size, machine_t machine, int logtube) {
-   memory = init_ram(size);
+
+    memory = init_ram(size);
    // Setup the machine specific memory read/write handler
    switch (machine) {
    case MACHINE_BEEB:
