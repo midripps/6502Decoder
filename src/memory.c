@@ -444,22 +444,34 @@ static void memory_read_pet(int data, int ea) {
     memory[ea] = data;
 }
 
-static void load_rom_images() {
-    if (!mem_roms_dir) return;
-    
+static void load_rom_image(uint16_t address) {
+    char romImageFileName[9];
+    sprintf(romImageFileName, "%04" PRIx16 ".bin", address);
+
     char romFilePathName[255];
     strcpy(romFilePathName, mem_roms_dir);
     if (romFilePathName[strlen(romFilePathName) - 1] != '\\')
         strcat(romFilePathName, "\\");
-    strcat(romFilePathName, "b000.bin");
+    strcat(romFilePathName, romImageFileName);
 
     FILE* romsFile = fopen(romFilePathName, "rb");
 
     int romSize = 4096;
-    if (fread(&memory[0xb000], sizeof(uint8_t), romSize, romsFile) != romSize)
+    if (fread(&memory[address], sizeof(uint8_t), romSize, romsFile) != romSize)
         puts("Error, failed to read all ROM bytes.");
 
     fclose(romsFile);
+}
+
+
+static void load_rom_images() {
+    if (!mem_roms_dir) return;
+    
+    load_rom_image(0xb000);
+    load_rom_image(0xc000);
+    load_rom_image(0xd000);
+    // TODO: Load edit rom (0xe000);
+    load_rom_image(0xf000);
 }
 
 static void init_pet(int logtube) {
