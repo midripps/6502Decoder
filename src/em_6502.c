@@ -668,7 +668,6 @@ static void em_6502_interrupt(sample_t *sample_q, int num_cycles, instruction_t 
 }
 
 static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *instruction) {
-
    // Unpack the instruction bytes
    int opcode = sample_q[0].data;
 

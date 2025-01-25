@@ -455,10 +455,14 @@ static void load_rom_image(uint16_t address) {
     strcat(romFilePathName, romImageFileName);
 
     FILE* romsFile = fopen(romFilePathName, "rb");
+    if (!romsFile) {
+        printf("Warning: Failed to open rom: %s\n", romFilePathName);
+        return;
+    }
 
     int romSize = 4096;
     if (fread(&memory[address], sizeof(uint8_t), romSize, romsFile) != romSize)
-        puts("Error, failed to read all ROM bytes.");
+        printf("Warning, failed to read all %s ROM bytes.", romImageFileName);
 
     fclose(romsFile);
 }
