@@ -595,7 +595,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
        printf("Roms dir: %s\n", arguments->roms_dir);
        break;
    case KEY_VERIFY:
-      arguments->idx_verify = arg;
+      if (arg && strlen(arg) > 0) {
+         arguments->idx_verify = atoi(arg);
+      }
+      else {
+         arguments->idx_verify = UNDEFINED;
+      }
       break;
    case KEY_VERIFY_MASK:
       if (arg && strlen(arg) > 0) {
@@ -1109,6 +1114,11 @@ int decode_instruction(sample_t *sample_q, int num_samples) {
       }
    }
 
+   if (arguments.verify_mask) {
+      int data = sample_q[0].data;
+      // TODO: int data_verify = sample_q[0].
+   }
+
    // Decode the instruction
    int num_cycles = analyze_instruction(sample_q, num_samples, rst_seen);
 
@@ -1214,6 +1224,7 @@ void decode(FILE *stream) {
    int idx_vda   = arguments.idx_vda;
    int idx_vpa   = arguments.idx_vpa;
    int idx_e     = arguments.idx_e;
+   int idx_verify = arguments.idx_verify;
 
    // Invert RDY polarity on the 6800 to allow it to be driven from BA
    int rdy_pol = (arguments.cpu_type == CPU_6800) ? 0 : 1;
@@ -1244,6 +1255,7 @@ void decode(FILE *stream) {
    s.rst  = -1;
    s.e    = -1;
    s.user = -1;
+   s.verify = -1;
 
    if (arguments.byte) {
 
@@ -1301,7 +1313,11 @@ void decode(FILE *stream) {
                if (idx_user >= 0) {
                   s.user = (sample >> idx_user) & 1;
                }
+               if (idx_verify >= 0 && arguments.verify_mask > 0) {
+                  s.verify = (sample >> idx_verify) & arguments.verify_mask;
+               }
                s.data = (sample >> idx_data) & 255;
+               
                queue_sample(&s);
             }
             s.sample_count++;
@@ -1377,6 +1393,9 @@ void decode(FILE *stream) {
                   }
                } else {
                   if (last_phi2 != -1 && (idx_rdy < 0 || ((sample >> idx_rdy) & 1)) ) {
+                     if (idx_verify >= 0 && arguments.verify_mask > 0) {
+                        s.verify = (sample >> idx_verify) & arguments.verify_mask;
+                     }
                      // Sample the data skewed (--skew=) relative to the falling edge of PHI2
                      s.data = (skew_buffer[s.rnw == 0 ? wrdata_head : rddata_head] >> idx_data) & 255;
                      queue_sample(&s);

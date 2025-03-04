@@ -53,6 +53,7 @@ typedef struct {
    int8_t         rst; // -1 indicates unknown
    int8_t           e; // -1 indicates unknown (65816 e pin)
    int8_t        user; // -1 indicates unknown (user defined signal)
+   int8_t      verify; // -1 indicates unknown (data bus bits to verify data bus).
 } sample_t;
 
 
