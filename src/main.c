@@ -195,6 +195,8 @@ enum {
    KEY_MS,
    KEY_XS,
    KEY_ROMSDIR,
+   KEY_VERIFY,
+   KEY_VERIFY_MASK,
 };
 
 
@@ -277,6 +279,8 @@ static struct argp_option options[] = {
    { "skew_rd",    KEY_SKEW_RD,    "SKEW", OPTION_ARG_OPTIONAL, "Skew the data bus by +/- n samples for read data",  GROUP_GENERAL},
    { "skew_wr",    KEY_SKEW_WR,    "SKEW", OPTION_ARG_OPTIONAL, "Skew the data bus by +/- n samples for write data", GROUP_GENERAL},
    { "labels",      KEY_LABELS,   "FILE",                    0, "Swift format label/symbols file e.g. from beebasm", GROUP_GENERAL},
+   { "verify",      KEY_VERIFY, "BITNUM",  OPTION_ARG_OPTIONAL, "Bit number for data verify bits (default 12)",      GROUP_GENERAL},
+   { "verify-mask", KEY_VERIFY_MASK, "HEX", OPTION_ARG_OPTIONAL, "Bit mask of data bus bits to verify.",             GROUP_GENERAL},
 
    { 0, 0, 0, 0, "Output options:", GROUP_OUTPUT},
 
@@ -590,6 +594,18 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
        arguments->roms_dir = arg;
        printf("Roms dir: %s\n", arguments->roms_dir);
        break;
+   case KEY_VERIFY:
+      arguments->idx_verify = arg;
+      break;
+   case KEY_VERIFY_MASK:
+      if (arg && strlen(arg) > 0) {
+         arguments->verify_mask= strtol(arg, (char**)NULL, 16);
+      }
+      else {
+         arguments->verify_mask = 0;
+      }
+
+
    case ARGP_KEY_ARG:
       arguments->filename = arg;
       break;

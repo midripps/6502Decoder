@@ -118,6 +118,8 @@ typedef struct {
    char *filename;
    int show_romno;
    char* roms_dir;
+   int idx_verify;
+   int verify_mask;
 } arguments_t;
 
 typedef struct {
