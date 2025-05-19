@@ -16,7 +16,7 @@ clockRising = False
 
 binDataRemaining = True
 sampleNum = 0
-while binDataRemaining:
+while binDataRemaining and sampleNum < 200200:
     binChunk = binFile.read(1024)
     if not binChunk:
         binDataRemaining = False
@@ -26,7 +26,6 @@ while binDataRemaining:
             secondByte = binChunk[i+1]
             sample = (secondByte << 8) | firstByte
 
-
             if not pastReset and (sample & (1 << RST)) == (1 << RST):
                 pastReset = True
                 print(f"RST: {sampleNum}")
@@ -35,10 +34,22 @@ while binDataRemaining:
             if prevClockHigh == False:
                 if clockHigh:
                     clockRising = True
-                    print(f"Phi2 Edge: {sampleNum}")
+                    clockRisingSampleNum = sampleNum
+                    # print(f"Phi2 Edge: {sampleNum}")
                 else:
                     clockRising = False
 
             sampleNum += 1
-            prevClockHigh = clockHigh                   
+            prevClockHigh = clockHigh              
+
+            if pastReset and sampleNum == clockRisingSampleNum + 2:
+                clockRisingSampleNum = 0
+
+                cs1 = not ((sample & (1 << _CS1)) == (1 << _CS1))
+                cs2 = (sample & (1 << _CS2)) == (1 << _CS2)
+
+                if cs1 and cs2:
+                    address = sample >> 4
+                    print(f"F{address:03X}")
+
 binFile.close()
