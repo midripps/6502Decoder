@@ -58,6 +58,7 @@ typedef struct {
    const char *fmt;
 } InstrType;
 
+int verify_mask = 0;
 
 // ====================================================================
 // Static variables
@@ -602,6 +603,8 @@ static void em_6502_init(arguments_t *args) {
       instr->fmt = addr_mode_table[instr->mode].fmt;
       instr++;
    }
+
+   verify_mask = args->verify_mask;
 }
 
 
@@ -670,6 +673,10 @@ static void em_6502_interrupt(sample_t *sample_q, int num_cycles, instruction_t 
 static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *instruction) {
    // Unpack the instruction bytes
    int opcode = sample_q[0].data;
+
+   if (sample_q[0].sample_count == 0x00091b47) {
+      puts("Here.");
+   }
 
    // lookup the entry for the instruction
    InstrType *instr = &instr_table[opcode];
@@ -758,11 +765,13 @@ static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *i
    if (instr->emulate) {
 
       int operand;
+      int operand_verify = 0;
       if (instr->optype == RMWOP) {
          // e.g. <opcode> <op1> <op2> <read old> <write old> <write new>
          //      <opcode> <op1>       <read old> <write old> <write new>
          // Want to pick off the read
          operand = sample_q[num_cycles - 3].data;
+         operand_verify = sample_q[num_cycles - 3].verify;
       } else if (instr->optype == BRANCHOP) {
          // the operand is true if branch taken
          operand = (num_cycles != 2);
@@ -792,6 +801,7 @@ static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *i
       } else {
          // default to using the last bus cycle as the operand
          operand = sample_q[num_cycles - 1].data;
+         operand_verify = sample_q[num_cycles - 1].verify;
       }
 
       // Operand 2 is the value written back in a store or read-modify-write
@@ -851,6 +861,19 @@ static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *i
       // Model memory reads
       if (ea >= 0 && (instr->optype == READOP || instr->optype == RMWOP)) {
          memory_read(operand, ea, MEM_DATA);
+         if (verify_mask) {
+            if (ea >= 0xe810 && ea <= 0xe82f ||
+               ea >= 0xe840 && ea <= 0xe84f ||
+               ea >= 0xe880 && ea <= 0xe88f ||
+               ea >= 0xb000 && ea < 0xffff) {
+            }
+            else {
+               int bus_bits = operand & verify_mask;
+               if (bus_bits != operand_verify) {
+                  printf("Memory verify fail at %x: data bus: %x, ram bus: %x\n", ea, bus_bits, operand_verify);
+               }
+            }
+         }
       }
 
       // Execute the instruction specific function
