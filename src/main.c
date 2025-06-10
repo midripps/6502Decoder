@@ -1102,6 +1102,7 @@ int decode_instruction(sample_t *sample_q, int num_samples) {
       }
       if (notype) {
          // Do this by dead reconning
+         // TODO: This needs to be one less for the 6504 running on Phi1.
          rst_seen = cpu_rst_delay[arguments.cpu_type];
          // We could also check the vector
       } else {
