@@ -684,9 +684,11 @@ static void em_6502_emulate(sample_t *sample_q, int num_cycles, instruction_t *i
    // Unpack the instruction bytes
    int opcode = sample_q[0].data;
 
+   /* Useful for stopping at a known sample count from PulseView. 
    if (sample_q[0].sample_count == 0x00091b47) {
       puts("Here.");
    }
+   */
 
    // lookup the entry for the instruction
    InstrType *instr = &instr_table[opcode];
