@@ -444,6 +444,17 @@ static void memory_read_pet(int data, int ea) {
     memory[ea] = data;
 }
 
+static void memory_read_x040(int data, int ea) {
+   if (ea >= 0x0200 && ea <= 0x0fff) return;
+
+   if (memory[ea] >= 0 && memory[ea] != data) {
+      log_memory_fail(ea, memory[ea], data);
+      failflag |= 1;
+   }
+   memory[ea] = data;
+}
+
+
 static void load_rom_image(uint16_t address) {
     char romImageFileName[9];
     sprintf(romImageFileName, "%04" PRIx16 ".bin", address);
@@ -493,7 +504,7 @@ static void init_pet(int logtube) {
 
 static void init_pet_x040(int logtube) {
    load_x040_rom_images();
-   memory_read_fn = memory_read_pet;
+   memory_read_fn = memory_read_x040;
    memory_write_fn = memory_write_default;
 }
 
