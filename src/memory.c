@@ -478,10 +478,23 @@ static void load_rom_images() {
     load_rom_image(0xf000);
 }
 
+static void load_x040_rom_images() {
+   if (!mem_roms_dir) return;
+
+   load_rom_image(0xe000);
+   load_rom_image(0xf000);
+}
+
 static void init_pet(int logtube) {
     load_rom_images();
     memory_read_fn = memory_read_pet;
     memory_write_fn = memory_write_default;
+}
+
+static void init_pet_x040(int logtube) {
+   load_x040_rom_images();
+   memory_read_fn = memory_read_pet;
+   memory_write_fn = memory_write_default;
 }
 
 // ==================================================
@@ -536,6 +549,9 @@ void memory_init(int size, machine_t machine, int logtube) {
    case MACHINE_PET:
        init_pet(logtube);
        break;
+   case MACHINE_PET_X040:
+      init_pet_x040(logtube);
+      break;
    default:
       init_default(logtube);
       break;

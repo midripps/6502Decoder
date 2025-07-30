@@ -1,1 +1,1 @@
-..\src\x64\Debug\6502Decoder -h -i -s --mem=FFF --machine=pet --roms=.\roms-3040 --rst=0 --phi2=1 --rdy= --rnw=2 --sync=3 --data=4 %1
+..\src\x64\Debug\6502Decoder -h -i -s --mem=FFF --machine=pet_x040 --roms=.\roms-3040 --rst=0 --phi2=1 --rdy= --rnw=2 --sync=3 --data=4 %1

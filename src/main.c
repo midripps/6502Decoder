@@ -43,6 +43,7 @@ const char *machine_names[] = {
    "mek6800d2",
    "blitter",
    "pet",
+   "pet_x040",
    0
 };
 
