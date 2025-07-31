@@ -489,7 +489,7 @@ static void load_rom_image(uint16_t address) {
 
     long romSize = romFileStat.st_size;
     if (fread(&memory[address], sizeof(uint8_t), romSize, romsFile) != romSize)
-        printf("Warning, failed to read all %s ROM bytes.", romImageFileName);
+        printf("Warning, failed to read all %s ROM bytes.\n", romImageFileName);
 
     fclose(romsFile);
 }
