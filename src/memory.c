@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "defs.h"
 #include "tube_decode.h"
 #include "memory.h"
@@ -454,6 +455,15 @@ static void memory_read_x040(int data, int ea) {
    memory[ea] = data;
 }
 
+static void memory_read_x040_6504(int data, int ea) {
+   // TODO: 6504 IO regions: if (ea >= 0x080 && ea <= 0x0fff) return;
+
+   if (memory[ea] >= 0 && memory[ea] != data) {
+      log_memory_fail(ea, memory[ea], data);
+      failflag |= 1;
+   }
+   memory[ea] = data;
+}
 
 static void load_rom_image(uint16_t address) {
     char romImageFileName[9];
@@ -465,13 +475,19 @@ static void load_rom_image(uint16_t address) {
         strcat(romFilePathName, "\\");
     strcat(romFilePathName, romImageFileName);
 
+    struct stat romFileStat;
+    if (stat(romFilePathName, &romFileStat) < 0) {
+       printf("Warning: Failed to get rom file size: %s\n", romFilePathName);
+       return;
+    }
+
     FILE* romsFile = fopen(romFilePathName, "rb");
     if (!romsFile) {
         printf("Warning: Failed to open rom: %s\n", romFilePathName);
         return;
     }
 
-    int romSize = 4096;
+    long romSize = romFileStat.st_size;
     if (fread(&memory[address], sizeof(uint8_t), romSize, romsFile) != romSize)
         printf("Warning, failed to read all %s ROM bytes.", romImageFileName);
 
@@ -496,6 +512,12 @@ static void load_x040_rom_images() {
    load_rom_image(0xf000);
 }
 
+static void load_x040_6504_rom_images() {
+   if (!mem_roms_dir) return;
+
+   load_rom_image(0xfc00);
+}
+
 static void init_pet(int logtube) {
     load_rom_images();
     memory_read_fn = memory_read_pet;
@@ -505,6 +527,12 @@ static void init_pet(int logtube) {
 static void init_pet_x040(int logtube) {
    load_x040_rom_images();
    memory_read_fn = memory_read_x040;
+   memory_write_fn = memory_write_default;
+}
+
+static void init_pet_x040_6504(int logtube) {
+   load_x040_6504_rom_images();
+   memory_read_fn = memory_read_x040_6504;
    memory_write_fn = memory_write_default;
 }
 
@@ -562,6 +590,9 @@ void memory_init(int size, machine_t machine, int logtube) {
        break;
    case MACHINE_PET_X040:
       init_pet_x040(logtube);
+      break;
+   case MACHINE_PET_X040_6504:
+      init_pet_x040_6504(logtube);
       break;
    default:
       init_default(logtube);

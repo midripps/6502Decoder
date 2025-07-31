@@ -44,6 +44,7 @@ const char *machine_names[] = {
    "blitter",
    "pet",
    "pet_x040",
+   "pet_x040_6504",
    0
 };
 
@@ -1103,9 +1104,9 @@ int decode_instruction(sample_t *sample_q, int num_samples) {
       }
       if (notype) {
          // Do this by dead reconning
-         // TODO: This needs to be one less for the 6504 running on Phi1.
          rst_seen = cpu_rst_delay[arguments.cpu_type];
-         // We could also check the vector
+
+         if(arguments.machine == MACHINE_PET_X040_6504) rst_seen = 8;
       } else {
          if (sample_q[7].type == OPCODE) {
             rst_seen = 7;

@@ -84,7 +84,6 @@ static int aland        = 0;
 static int c02          = 0;
 static int bbctube      = 0;
 static int master_nordy = 0;
-static int phi1         = 0;
 
 static InstrType *instr_table;
 
@@ -484,7 +483,6 @@ static void em_6502_init(arguments_t *args) {
    switch (args->cpu_type) {
    case CPU_6502:
       instr_table = instr_table_6502;
-      phi1 = args->idx_phi1 >= 0;
       break;
    case CPU_6502_ARLET:
       arlet = 1;
@@ -665,14 +663,8 @@ static void em_6502_reset(sample_t *sample_q, int num_cycles, instruction_t *ins
    if (c02) {
       D = 0;
    }
-   if (phi1 == 1) {
-      // For the 6504 operating on the other half of the clock cycle,
-      // this needs to be cycles -2 and -3 to get the reset vector. 
-      PC = (sample_q[num_cycles - 2].data << 8) + sample_q[num_cycles - 3].data;
-   }
-   else {
-      PC = (sample_q[num_cycles - 1].data << 8) + sample_q[num_cycles - 2].data;
-   }
+
+   PC = (sample_q[num_cycles - 1].data << 8) + sample_q[num_cycles - 2].data;
    
 }
 
