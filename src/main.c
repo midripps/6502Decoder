@@ -75,6 +75,9 @@ int triggered = 0;
 // indicate state prediction failed
 int failflag = 0;
 
+char* source[65536] = { 0 };
+
+
 // ====================================================================
 // Argp processing
 // ====================================================================
@@ -631,6 +634,36 @@ static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
 
 
 
+void loadSource() {
+   const char* sourceFileName = "source.txt";
+
+   char sourceFilePathName[255];
+   strcpy(sourceFilePathName, arguments.roms_dir);
+   if (sourceFilePathName[strlen(sourceFilePathName) - 1] != '\\')
+      strcat(sourceFilePathName, "\\");
+   strcat(sourceFilePathName, sourceFileName);
+
+   FILE* sourceFile = fopen(sourceFilePathName, "r");
+   if (!sourceFile) {
+      printf("Warning: Failed to open rom source file: %s\n", sourceFilePathName);
+      return;
+   }
+
+   char buf[255];
+   while (fgets(buf, 255, sourceFile)) {
+      int lineLen = strlen(buf);
+      long int address = strtol(buf, NULL, 16);
+      if (address > 0) {
+         if (buf[lineLen - 1] == '\n') buf[lineLen-- -1] = '\0';
+         source[address] = malloc(lineLen + 1);
+         strcpy(source[address], buf);
+      }
+   }
+
+   fclose(sourceFile);
+}
+
+
 // ====================================================================
 // Analyze a complete instruction
 // ====================================================================
@@ -1034,6 +1067,12 @@ static int analyze_instruction(sample_t *sample_q, int num_samples, int rst_seen
       if (fail) {
          bp += write_s(bp, " prediction failed");
       }
+
+      // Show source
+      if (pc > 0 && source[pc] != NULL) {
+         bp += write_s(bp, source[pc]);
+      }
+
       // End the line
       *bp++ = 0;
       puts(disbuf);
@@ -1723,6 +1762,8 @@ int main(int argc, char *argv[]) {
       profiler_init(em);
    }
 
+   loadSource();
+
    FILE *stream;
    if (!arguments.filename || !strcmp(arguments.filename, "-")) {
       stream = stdin;
@@ -1743,3 +1784,4 @@ int main(int argc, char *argv[]) {
 
    return 0;
 }
+
